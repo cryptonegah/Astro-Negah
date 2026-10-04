@@ -1,22 +1,361 @@
 ---
-const title = "نقشه تولد | Astro Negah";
+const pageTitle = "Birth Chart | Astro Negah";
 ---
 
-<html lang="fa" dir="rtl">
+<html lang="en" dir="ltr">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
-    <title>{title}</title>
+    <title>{pageTitle}</title>
+
+    <style>
+      :root {
+        color-scheme: dark;
+        --card: rgba(20, 25, 62, 0.82);
+        --border: rgba(145, 125, 255, 0.25);
+        --text: #f4f2ff;
+        --muted: #aaa7c7;
+        --accent: #9b7cff;
+        --accent-strong: #b69cff;
+        --input: #111737;
+      }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        font-family:
+          Inter,
+          ui-sans-serif,
+          system-ui,
+          -apple-system,
+          BlinkMacSystemFont,
+          "Segoe UI",
+          sans-serif;
+        color: var(--text);
+        background:
+          radial-gradient(
+            circle at top,
+            rgba(100, 76, 210, 0.24),
+            transparent 42%
+          ),
+          linear-gradient(180deg, #090d25 0%, #050816 100%);
+      }
+
+      .page {
+        width: min(100% - 32px, 900px);
+        margin: 0 auto;
+        padding: 48px 0 80px;
+      }
+
+      .topbar {
+        margin-bottom: 32px;
+      }
+
+      .back {
+        color: var(--muted);
+        text-decoration: none;
+      }
+
+      .back:hover {
+        color: var(--accent-strong);
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 32px;
+      }
+
+      .eyebrow {
+        margin: 0 0 10px;
+        color: var(--accent-strong);
+        font-size: 0.8rem;
+        letter-spacing: 0.18em;
+        text-transform: uppercase;
+      }
+
+      h1 {
+        margin: 0;
+        font-size: clamp(2.2rem, 6vw, 4rem);
+      }
+
+      .intro {
+        max-width: 600px;
+        margin: 18px auto 0;
+        color: var(--muted);
+        line-height: 1.7;
+      }
+
+      .card {
+        padding: clamp(24px, 5vw, 42px);
+        border: 1px solid var(--border);
+        border-radius: 24px;
+        background: var(--card);
+        box-shadow: 0 30px 80px rgba(0, 0, 0, 0.35);
+        backdrop-filter: blur(18px);
+      }
+
+      .form-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 20px;
+      }
+
+      .field {
+        display: flex;
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .field.full {
+        grid-column: 1 / -1;
+      }
+
+      label {
+        color: #dcd9f3;
+        font-size: 0.92rem;
+      }
+
+      input {
+        width: 100%;
+        min-height: 50px;
+        padding: 12px 14px;
+        border: 1px solid rgba(160, 145, 255, 0.2);
+        border-radius: 12px;
+        outline: none;
+        color: var(--text);
+        background: var(--input);
+        font: inherit;
+      }
+
+      input:focus {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px rgba(155, 124, 255, 0.15);
+      }
+
+      .button-row {
+        margin-top: 28px;
+      }
+
+      button {
+        width: 100%;
+        min-height: 54px;
+        border: 0;
+        border-radius: 14px;
+        cursor: pointer;
+        color: white;
+        background: linear-gradient(135deg, #7658df, #a17dff);
+        font: inherit;
+        font-weight: 700;
+        font-size: 1rem;
+      }
+
+      .result {
+        margin-top: 28px;
+      }
+
+      .result-card {
+        padding: 24px;
+        border: 1px solid var(--border);
+        border-radius: 20px;
+        background: rgba(8, 12, 34, 0.72);
+        overflow: auto;
+      }
+
+      .result-card h2 {
+        margin-top: 0;
+      }
+
+      pre {
+        margin: 0;
+        color: #dcd9f3;
+        font-size: 0.82rem;
+        line-height: 1.7;
+        white-space: pre-wrap;
+        word-break: break-word;
+      }
+
+      @media (max-width: 680px) {
+        .page {
+          width: min(100% - 20px, 900px);
+          padding-top: 28px;
+        }
+
+        .form-grid {
+          grid-template-columns: 1fr;
+        }
+
+        .field.full {
+          grid-column: auto;
+        }
+      }
+    </style>
   </head>
 
   <body>
-    <main>
-      <a href="/">← بازگشت به صفحه اصلی</a>
+    <main class="page">
+      <div class="topbar">
+        <a class="back" href="/">← Back to Home</a>
+      </div>
 
-      <h1>نقشه تولد</h1>
-      <p>
-        این بخش برای ساخت و نمایش نقشه تولد شما آماده می‌شود.
-      </p>
+      <header class="hero">
+        <p class="eyebrow">Astro Negah</p>
+        <h1>Birth Chart</h1>
+        <p class="intro">
+          Enter your birth information and discover your unique cosmic chart.
+        </p>
+      </header>
+
+      <section class="card">
+        <form id="birth-chart-form">
+          <div class="form-grid">
+            <div class="field full">
+              <label for="name">Name</label>
+              <input
+                id="name"
+                type="text"
+                name="name"
+                placeholder="Your name"
+              />
+            </div>
+
+            <div class="field">
+              <label for="birthDate">Birth Date</label>
+              <input
+                id="birthDate"
+                type="date"
+                name="birthDate"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="birthTime">Birth Time</label>
+              <input
+                id="birthTime"
+                type="time"
+                name="birthTime"
+                required
+              />
+            </div>
+
+            <div class="field full">
+              <label for="timezone">Timezone</label>
+              <input
+                id="timezone"
+                type="text"
+                name="timezone"
+                value="Asia/Tehran"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="latitude">Latitude</label>
+              <input
+                id="latitude"
+                type="number"
+                name="latitude"
+                step="any"
+                value="35.6892"
+                required
+              />
+            </div>
+
+            <div class="field">
+              <label for="longitude">Longitude</label>
+              <input
+                id="longitude"
+                type="number"
+                name="longitude"
+                step="any"
+                value="51.3890"
+                required
+              />
+            </div>
+          </div>
+
+          <div class="button-row">
+            <button id="calculate-button" type="submit">
+              Calculate Birth Chart
+            </button>
+          </div>
+        </form>
+
+        <section id="result" class="result" hidden>
+          <div class="result-card">
+            <h2>Chart Result</h2>
+            <pre id="result-content"></pre>
+          </div>
+        </section>
+      </section>
     </main>
   </body>
+
+  <script>
+    const form = document.getElementById("birth-chart-form");
+    const resultSection = document.getElementById("result");
+    const resultContent = document.getElementById("result-content");
+    const calculateButton = document.getElementById("calculate-button");
+
+    form.addEventListener("submit", async (event) => {
+      event.preventDefault();
+
+      const formData = new FormData(form);
+
+      const birthDate = formData.get("birthDate");
+      const birthTime = formData.get("birthTime");
+      const timezone = formData.get("timezone");
+      const latitude = formData.get("latitude");
+      const longitude = formData.get("longitude");
+
+      const params = new URLSearchParams({
+        birthDate,
+        birthTime,
+        timezone,
+        latitude,
+        longitude
+      });
+
+      resultSection.hidden = false;
+      resultContent.textContent = "Calculating...";
+      calculateButton.disabled = true;
+
+      try {
+        const response = await fetch(
+          `/api/birth-chart?${params.toString()}`,
+          {
+            method: "GET",
+            headers: {
+              Accept: "application/json"
+            }
+          }
+        );
+
+        const data = await response.json();
+
+        if (!response.ok || !data.ok) {
+          throw new Error(
+            data.error || "Birth chart calculation failed"
+          );
+        }
+
+        resultContent.textContent = JSON.stringify(
+          data.chart,
+          null,
+          2
+        );
+      } catch (error) {
+        resultContent.textContent =
+          error instanceof Error
+            ? error.message
+            : "Birth chart calculation failed";
+      } finally {
+        calculateButton.disabled = false;
+      }
+    });
+  </script>
 </html>
