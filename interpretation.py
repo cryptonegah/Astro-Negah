@@ -1,4 +1,3 @@
-
 """
 Astro Negah
 Birth Chart Interpretation Engine
@@ -22,15 +21,15 @@ def interpret_personality(chart):
         "title": "Personality Summary",
         "sun": (
             f"Your Sun is in {sun['sign']} "
-            f"at {sun['degree']}°{sun['minute']:02d}′."
+            f"at {sun['degree']}┬░{sun['minute']:02d}ΓÇ▓."
         ),
         "moon": (
             f"Your Moon is in {moon['sign']} "
-            f"at {moon['degree']}°{moon['minute']:02d}′."
+            f"at {moon['degree']}┬░{moon['minute']:02d}ΓÇ▓."
         ),
         "ascendant": (
             f"Your Ascendant is in {ascendant['sign']} "
-            f"at {ascendant['degree']}°{ascendant['minute']:02d}′."
+            f"at {ascendant['degree']}┬░{ascendant['minute']:02d}ΓÇ▓."
         )
     }
 
@@ -80,12 +79,46 @@ def interpret_aspects(chart):
 
 def build_cosmic_story(chart):
     """
-    Combine all interpretation sections into one result.
+    Build the complete interpretation result,
+    including the final Cosmic Story section.
     """
 
-    return {
-        "personality_summary": interpret_personality(chart),
-        "planets_and_houses": interpret_planets(chart),
-        "aspects": interpret_aspects(chart)
+    personality = interpret_personality(chart)
+    planets = interpret_planets(chart)
+    aspects = interpret_aspects(chart)
+
+    sun_sign = chart["planets"]["Sun"]["zodiac"]["sign"]
+    moon_sign = chart["planets"]["Moon"]["zodiac"]["sign"]
+    ascendant_sign = chart["ascendant_zodiac"]["sign"]
+
+    cosmic_story = {
+        "title": "✨ Your Cosmic Story",
+        "intro": (
+            f"Your cosmic story begins with a {sun_sign} Sun, "
+            f"a {moon_sign} Moon, and a {ascendant_sign} Ascendant."
+        ),
+        "personality": (
+            "Your Sun represents your core identity and the direction "
+            "you naturally seek in life."
+        ),
+        "emotions": (
+            "Your Moon reflects your emotional world, inner needs, "
+            "and the way you process experiences."
+        ),
+        "presence": (
+            "Your Ascendant describes the way you meet the world "
+            "and the impression you naturally create."
+        ),
+        "reflection": (
+            f"Together, your {sun_sign} Sun, {moon_sign} Moon, "
+            f"and {ascendant_sign} Ascendant create a unique "
+            "combination of identity, emotion, and outward expression."
+        )
     }
 
+    return {
+        "personality_summary": personality,
+        "planets_and_houses": planets,
+        "aspects": aspects,
+        "cosmic_story": cosmic_story
+    }

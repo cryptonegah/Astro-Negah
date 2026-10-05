@@ -12,6 +12,7 @@ const pageTitle = "Birth Chart | Astro Negah";
       :root {
         color-scheme: dark;
         --card: rgba(20, 25, 62, 0.82);
+        --card-soft: rgba(8, 12, 34, 0.72);
         --border: rgba(145, 125, 255, 0.25);
         --text: #f4f2ff;
         --muted: #aaa7c7;
@@ -46,7 +47,7 @@ const pageTitle = "Birth Chart | Astro Negah";
       }
 
       .page {
-        width: min(100% - 32px, 900px);
+        width: min(100% - 32px, 1000px);
         margin: 0 auto;
         padding: 48px 0 80px;
       }
@@ -153,43 +154,171 @@ const pageTitle = "Birth Chart | Astro Negah";
         font-size: 1rem;
       }
 
+      button:disabled {
+        opacity: 0.65;
+        cursor: wait;
+      }
+
       .result {
-        margin-top: 28px;
+        margin-top: 32px;
       }
 
       .result-card {
-        padding: 24px;
+        padding: 28px;
         border: 1px solid var(--border);
         border-radius: 20px;
-        background: rgba(8, 12, 34, 0.72);
-        overflow: auto;
+        background: var(--card-soft);
       }
 
       .result-card h2 {
         margin-top: 0;
+        margin-bottom: 24px;
+        font-size: 1.6rem;
       }
 
-      pre {
-        margin: 0;
-        color: #dcd9f3;
-        font-size: 0.82rem;
+      .section {
+        margin-top: 28px;
+        padding-top: 28px;
+        border-top: 1px solid rgba(145, 125, 255, 0.16);
+      }
+
+      .section:first-of-type {
+        margin-top: 0;
+        padding-top: 0;
+        border-top: 0;
+      }
+
+      .section h3 {
+        margin: 0 0 18px;
+        color: var(--accent-strong);
+        font-size: 1.2rem;
+      }
+
+      .summary {
+        display: grid;
+        gap: 12px;
+      }
+
+      .summary-item {
+        padding: 16px 18px;
+        border-radius: 14px;
+        background: rgba(155, 124, 255, 0.07);
         line-height: 1.7;
-        white-space: pre-wrap;
-        word-break: break-word;
+      }
+
+      .planet-grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 12px;
+      }
+
+      .planet {
+        padding: 16px;
+        border: 1px solid rgba(145, 125, 255, 0.12);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .planet-name {
+        margin-bottom: 6px;
+        font-weight: 700;
+      }
+
+      .planet-info {
+        color: var(--muted);
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      .aspect-list {
+        display: grid;
+        gap: 10px;
+      }
+
+      .aspect {
+        display: flex;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 14px 16px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.025);
+      }
+
+      .aspect-name {
+        font-weight: 600;
+      }
+
+      .aspect-detail {
+        color: var(--muted);
+        text-align: right;
+        font-size: 0.9rem;
+      }
+
+      .cosmic-story {
+        padding: 24px;
+        border: 1px solid rgba(155, 124, 255, 0.24);
+        border-radius: 18px;
+        background:
+          radial-gradient(
+            circle at top right,
+            rgba(155, 124, 255, 0.16),
+            transparent 55%
+          ),
+          rgba(30, 24, 72, 0.42);
+      }
+
+      .cosmic-story h3 {
+        margin-bottom: 12px;
+      }
+
+      .cosmic-intro {
+        margin: 0 0 22px;
+        color: #ddd8ff;
+        font-size: 1.08rem;
+        line-height: 1.8;
+      }
+
+      .story-block {
+        margin-top: 18px;
+      }
+
+      .story-block strong {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--accent-strong);
+      }
+
+      .story-block p {
+        margin: 0;
+        color: var(--muted);
+        line-height: 1.75;
+      }
+
+      .error {
+        color: #ffb4b4;
       }
 
       @media (max-width: 680px) {
         .page {
-          width: min(100% - 20px, 900px);
+          width: min(100% - 20px, 1000px);
           padding-top: 28px;
         }
 
-        .form-grid {
+        .form-grid,
+        .planet-grid {
           grid-template-columns: 1fr;
         }
 
         .field.full {
           grid-column: auto;
+        }
+
+        .aspect {
+          flex-direction: column;
+        }
+
+        .aspect-detail {
+          text-align: left;
         }
       }
     </style>
@@ -287,8 +416,26 @@ const pageTitle = "Birth Chart | Astro Negah";
 
         <section id="result" class="result" hidden>
           <div class="result-card">
-            <h2>Chart Result</h2>
-            <pre id="result-content"></pre>
+            <h2>Your Cosmic Profile</h2>
+
+            <div class="section">
+              <h3>Personality Summary</h3>
+              <div id="personality-summary" class="summary"></div>
+            </div>
+
+            <div class="section">
+              <h3>Planets & Houses</h3>
+              <div id="planets-houses" class="planet-grid"></div>
+            </div>
+
+            <div class="section">
+              <h3>Aspects</h3>
+              <div id="aspects" class="aspect-list"></div>
+            </div>
+
+            <div class="section">
+              <div id="cosmic-story" class="cosmic-story"></div>
+            </div>
           </div>
         </section>
       </section>
@@ -298,7 +445,10 @@ const pageTitle = "Birth Chart | Astro Negah";
   <script>
     const form = document.getElementById("birth-chart-form");
     const resultSection = document.getElementById("result");
-    const resultContent = document.getElementById("result-content");
+    const personalitySummary = document.getElementById("personality-summary");
+    const planetsHouses = document.getElementById("planets-houses");
+    const aspectsContainer = document.getElementById("aspects");
+    const cosmicStory = document.getElementById("cosmic-story");
     const calculateButton = document.getElementById("calculate-button");
 
     form.addEventListener("submit", async (event) => {
@@ -321,7 +471,10 @@ const pageTitle = "Birth Chart | Astro Negah";
       });
 
       resultSection.hidden = false;
-      resultContent.textContent = "Calculating...";
+      personalitySummary.innerHTML = "<div>Calculating...</div>";
+      planetsHouses.innerHTML = "";
+      aspectsContainer.innerHTML = "";
+      cosmicStory.innerHTML = "";
       calculateButton.disabled = true;
 
       try {
@@ -343,16 +496,84 @@ const pageTitle = "Birth Chart | Astro Negah";
           );
         }
 
-        resultContent.textContent = JSON.stringify(
-          data.chart,
-          null,
-          2
-        );
+        const interpretation = data.interpretation;
+
+        const personality = interpretation.personality_summary;
+
+        personalitySummary.innerHTML = `
+          <div class="summary-item">${personality.sun}</div>
+          <div class="summary-item">${personality.moon}</div>
+          <div class="summary-item">${personality.ascendant}</div>
+        `;
+
+        planetsHouses.innerHTML =
+          interpretation.planets_and_houses
+            .map(
+              (planet) => `
+                <div class="planet">
+                  <div class="planet-name">${planet.planet}</div>
+                  <div class="planet-info">
+                    ${planet.sign} ${planet.degree}°${planet.minute}'
+                    · House ${planet.house}
+                    ${planet.retrograde ? " · Retrograde" : ""}
+                  </div>
+                </div>
+              `
+            )
+            .join("");
+
+        aspectsContainer.innerHTML =
+          interpretation.aspects
+            .map(
+              (aspect) => `
+                <div class="aspect">
+                  <div class="aspect-name">
+                    ${aspect.planet1} ${aspect.aspect} ${aspect.planet2}
+                  </div>
+                  <div class="aspect-detail">
+                    Orb ${aspect.orb.toFixed(2)}°
+                  </div>
+                </div>
+              `
+            )
+            .join("");
+
+        const story = interpretation.cosmic_story;
+
+        cosmicStory.innerHTML = `
+          <h3>${story.title}</h3>
+          <p class="cosmic-intro">${story.intro}</p>
+
+          <div class="story-block">
+            <strong>Your Personality</strong>
+            <p>${story.personality}</p>
+          </div>
+
+          <div class="story-block">
+            <strong>Your Emotional World</strong>
+            <p>${story.emotions}</p>
+          </div>
+
+          <div class="story-block">
+            <strong>Your Presence</strong>
+            <p>${story.presence}</p>
+          </div>
+
+          <div class="story-block">
+            <strong>Your Cosmic Pattern</strong>
+            <p>${story.reflection}</p>
+          </div>
+        `;
       } catch (error) {
-        resultContent.textContent =
-          error instanceof Error
-            ? error.message
-            : "Birth chart calculation failed";
+        personalitySummary.innerHTML = `
+          <div class="error">
+            ${
+              error instanceof Error
+                ? error.message
+                : "Birth chart calculation failed"
+            }
+          </div>
+        `;
       } finally {
         calculateButton.disabled = false;
       }

@@ -35,9 +35,11 @@ export async function GET({ url }) {
 
   const pythonCode = `
 from birth_chart import calculate_birth_chart_local
+from interpretation import build_cosmic_story
 import json
+import sys
 
-result = calculate_birth_chart_local(
+chart = calculate_birth_chart_local(
     ${year},
     ${month},
     ${day},
@@ -48,7 +50,15 @@ result = calculate_birth_chart_local(
     ${Number(longitude)}
 )
 
-print(json.dumps(result))
+interpretation = build_cosmic_story(chart)
+
+result = {
+    "chart": chart,
+    "interpretation": interpretation
+}
+
+sys.stdout.reconfigure(encoding="utf-8")
+print(json.dumps(result, ensure_ascii=False))
 `;
 
   const result = spawnSync(
@@ -79,12 +89,13 @@ print(json.dumps(result))
   }
 
   try {
-    const chart = JSON.parse(result.stdout);
+    const data = JSON.parse(result.stdout);
 
     return new Response(
       JSON.stringify({
         ok: true,
-        chart
+        chart: data.chart,
+        interpretation: data.interpretation
       }),
       {
         headers: {
