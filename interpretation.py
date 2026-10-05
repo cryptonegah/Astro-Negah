@@ -7,6 +7,17 @@ into structured interpretation sections.
 """
 
 
+def format_position(zodiac):
+    """
+    Format a zodiac position in a clean, readable form.
+    """
+
+    return (
+        f"{zodiac['degree']}°"
+        f"{zodiac['minute']:02d}′"
+    )
+
+
 def interpret_personality(chart):
     """
     Create a high-level personality summary
@@ -19,17 +30,20 @@ def interpret_personality(chart):
 
     return {
         "title": "Personality Summary",
+
         "sun": (
             f"Your Sun is in {sun['sign']} "
-            f"at {sun['degree']}┬░{sun['minute']:02d}ΓÇ▓."
+            f"at {format_position(sun)}."
         ),
+
         "moon": (
             f"Your Moon is in {moon['sign']} "
-            f"at {moon['degree']}┬░{moon['minute']:02d}ΓÇ▓."
+            f"at {format_position(moon)}."
         ),
+
         "ascendant": (
             f"Your Ascendant is in {ascendant['sign']} "
-            f"at {ascendant['degree']}┬░{ascendant['minute']:02d}ΓÇ▓."
+            f"at {format_position(ascendant)}."
         )
     }
 
@@ -50,6 +64,7 @@ def interpret_planets(chart):
             "sign": zodiac["sign"],
             "degree": zodiac["degree"],
             "minute": zodiac["minute"],
+            "second": zodiac["second"],
             "house": planet_data["house"],
             "retrograde": planet_data["retrograde"]
         })
@@ -93,22 +108,27 @@ def build_cosmic_story(chart):
 
     cosmic_story = {
         "title": "✨ Your Cosmic Story",
+
         "intro": (
             f"Your cosmic story begins with a {sun_sign} Sun, "
             f"a {moon_sign} Moon, and a {ascendant_sign} Ascendant."
         ),
+
         "personality": (
             "Your Sun represents your core identity and the direction "
             "you naturally seek in life."
         ),
+
         "emotions": (
             "Your Moon reflects your emotional world, inner needs, "
             "and the way you process experiences."
         ),
+
         "presence": (
             "Your Ascendant describes the way you meet the world "
             "and the impression you naturally create."
         ),
+
         "reflection": (
             f"Together, your {sun_sign} Sun, {moon_sign} Moon, "
             f"and {ascendant_sign} Ascendant create a unique "
