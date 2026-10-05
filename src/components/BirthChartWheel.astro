@@ -1,0 +1,1015 @@
+<div id="birth-chart-wheel-root" class="birth-chart-wheel">
+  <div class="wheel-placeholder">
+    <div class="wheel-placeholder-title">نقشه تولد</div>
+    <div class="wheel-placeholder-text">
+      پس از محاسبه اطلاعات تولد، چرخ کامل نقشه آسمان اینجا نمایش داده می‌شود.
+    </div>
+  </div>
+</div>
+
+<script>
+  const root = document.getElementById("birth-chart-wheel-root");
+
+  const zodiacSigns = [
+    "حمل",
+    "ثور",
+    "جوزا",
+    "سرطان",
+    "اسد",
+    "سنبله",
+    "میزان",
+    "عقرب",
+    "قوس",
+    "جدی",
+    "دلو",
+    "حوت"
+  ];
+
+  const zodiacLabels = [
+    "AR",
+    "TA",
+    "GE",
+    "CA",
+    "LE",
+    "VI",
+    "LI",
+    "SC",
+    "SA",
+    "CP",
+    "AQ",
+    "PI"
+  ];
+
+  const planetNames = {
+    Sun: "خورشید",
+    Moon: "ماه",
+    Mercury: "عطارد",
+    Venus: "زهره",
+    Mars: "مریخ",
+    Jupiter: "مشتری",
+    Saturn: "زحل",
+    Uranus: "اورانوس",
+    Neptune: "نپتون",
+    Pluto: "پلوتو"
+  };
+
+  const planetSymbols = {
+    Sun: "☉",
+    Moon: "☽",
+    Mercury: "☿",
+    Venus: "♀",
+    Mars: "♂",
+    Jupiter: "♃",
+    Saturn: "♄",
+    Uranus: "♅",
+    Neptune: "♆",
+    Pluto: "♇"
+  };
+
+  function normalizeDegree(value) {
+    let degree = Number(value) || 0;
+    degree %= 360;
+
+    if (degree < 0) {
+      degree += 360;
+    }
+
+    return degree;
+  }
+
+  function formatDegree(longitude) {
+    const degree = normalizeDegree(longitude);
+    const whole = Math.floor(degree);
+    const minutes = Math.floor((degree - whole) * 60);
+
+    return `${whole}°${String(minutes).padStart(2, "0")}′`;
+  }
+
+  function polarPoint(cx, cy, radius, angle) {
+    const radians = (angle - 90) * Math.PI / 180;
+
+    return {
+      x: cx + radius * Math.cos(radians),
+      y: cy + radius * Math.sin(radians)
+    };
+  }
+
+  function zodiacIndex(longitude) {
+    return Math.floor(normalizeDegree(longitude) / 30);
+  }
+
+  function zodiacDegree(longitude) {
+    return normalizeDegree(longitude) % 30;
+  }
+
+  function getHouse(chart, longitude) {
+    if (!chart?.houses || !Array.isArray(chart.houses)) {
+      return null;
+    }
+
+    const houses = chart.houses;
+
+    if (houses.length < 12) {
+      return null;
+    }
+
+    const value = normalizeDegree(longitude);
+
+    for (let i = 0; i < 12; i++) {
+      const start = normalizeDegree(houses[i]);
+      const end = normalizeDegree(houses[(i + 1) % 12]);
+
+      if (start < end) {
+        if (value >= start && value < end) {
+          return i + 1;
+        }
+      } else {
+        if (value >= start || value < end) {
+          return i + 1;
+        }
+      }
+    }
+
+    return null;
+  }
+
+  function createZodiacMarkup(
+    cx,
+    cy,
+    radius,
+    outerRadius,
+    zodiacInnerRadius
+  ) {
+    let markup = "";
+
+    for (let i = 0; i < 12; i++) {
+      const startAngle = i * 30;
+      const middleAngle = startAngle + 15;
+
+      const outerStart = polarPoint(
+        cx,
+        cy,
+        outerRadius,
+        startAngle
+      );
+
+      const outerEnd = polarPoint(
+        cx,
+        cy,
+        outerRadius,
+        startAngle + 30
+      );
+
+      const innerStart = polarPoint(
+        cx,
+        cy,
+        zodiacInnerRadius,
+        startAngle
+      );
+
+      const innerEnd = polarPoint(
+        cx,
+        cy,
+        zodiacInnerRadius,
+        startAngle + 30
+      );
+
+      const labelPoint = polarPoint(
+        cx,
+        cy,
+        radius,
+        middleAngle
+      );
+
+      markup += `
+        <line
+          x1="${innerStart.x}"
+          y1="${innerStart.y}"
+          x2="${outerStart.x}"
+          y2="${outerStart.y}"
+          class="zodiac-divider"
+        />
+
+        <text
+          x="${labelPoint.x}"
+          y="${labelPoint.y - 8}"
+          class="zodiac-label"
+          text-anchor="middle"
+        >
+          ${zodiacLabels[i]}
+        </text>
+
+        <text
+          x="${labelPoint.x}"
+          y="${labelPoint.y + 14}"
+          class="zodiac-name"
+          text-anchor="middle"
+        >
+          ${zodiacSigns[i]}
+        </text>
+      `;
+    }
+
+    const last = polarPoint(
+      cx,
+      cy,
+      outerRadius,
+      360
+    );
+
+    const first = polarPoint(
+      cx,
+      cy,
+      zodiacInnerRadius,
+      0
+    );
+
+    markup += `
+      <line
+        x1="${first.x}"
+        y1="${first.y}"
+        x2="${last.x}"
+        y2="${last.y}"
+        class="zodiac-divider"
+      />
+    `;
+
+    return markup;
+  }
+
+  function createHouseMarkup(
+    chart,
+    cx,
+    cy,
+    radius
+  ) {
+    if (!chart?.houses || !Array.isArray(chart.houses)) {
+      return "";
+    }
+
+    if (chart.houses.length < 12) {
+      return "";
+    }
+
+    let markup = "";
+
+    for (let i = 0; i < 12; i++) {
+      const angle = normalizeDegree(chart.houses[i]);
+
+      const point = polarPoint(
+        cx,
+        cy,
+        radius,
+        angle
+      );
+
+      markup += `
+        <line
+          x1="${cx}"
+          y1="${cy}"
+          x2="${point.x}"
+          y2="${point.y}"
+          class="house-line"
+        />
+      `;
+
+      const nextAngle = normalizeDegree(
+        chart.houses[(i + 1) % 12]
+      );
+
+      let diff = nextAngle - angle;
+
+      if (diff <= 0) {
+        diff += 360;
+      }
+
+      const middleAngle = angle + diff / 2;
+
+      const labelPoint = polarPoint(
+        cx,
+        cy,
+        radius * 0.43,
+        middleAngle
+      );
+
+      markup += `
+        <text
+          x="${labelPoint.x}"
+          y="${labelPoint.y}"
+          class="house-label"
+          text-anchor="middle"
+        >
+          ${i + 1}
+        </text>
+      `;
+    }
+
+    return markup;
+  }
+
+  function createAspectMarkup(
+    chart,
+    cx,
+    cy,
+    radius
+  ) {
+    if (!chart?.planets || !Array.isArray(chart.planets)) {
+      return "";
+    }
+
+    const planets = chart.planets;
+
+    const aspectAngles = [
+      {
+        value: 0,
+        className: "aspect-conjunction"
+      },
+      {
+        value: 60,
+        className: "aspect-sextile"
+      },
+      {
+        value: 90,
+        className: "aspect-square"
+      },
+      {
+        value: 120,
+        className: "aspect-trine"
+      },
+      {
+        value: 180,
+        className: "aspect-opposition"
+      }
+    ];
+
+    let markup = "";
+
+    for (let i = 0; i < planets.length; i++) {
+      for (let j = i + 1; j < planets.length; j++) {
+        const a = normalizeDegree(
+          planets[i]?.longitude
+        );
+
+        const b = normalizeDegree(
+          planets[j]?.longitude
+        );
+
+        let difference = Math.abs(a - b);
+
+        if (difference > 180) {
+          difference = 360 - difference;
+        }
+
+        let matchedAspect = null;
+
+        for (const aspect of aspectAngles) {
+          if (Math.abs(difference - aspect.value) <= 5) {
+            matchedAspect = aspect;
+            break;
+          }
+        }
+
+        if (!matchedAspect) {
+          continue;
+        }
+
+        const start = polarPoint(
+          cx,
+          cy,
+          radius,
+          a
+        );
+
+        const end = polarPoint(
+          cx,
+          cy,
+          radius,
+          b
+        );
+
+        markup += `
+          <line
+            x1="${start.x}"
+            y1="${start.y}"
+            x2="${end.x}"
+            y2="${end.y}"
+            class="aspect-line ${matchedAspect.className}"
+          />
+        `;
+      }
+    }
+
+    return markup;
+  }
+
+  function createPlanetMarkup(
+    chart,
+    cx,
+    cy,
+    radius
+  ) {
+    if (!chart?.planets || !Array.isArray(chart.planets)) {
+      return "";
+    }
+
+    let markup = "";
+
+    for (const planet of chart.planets) {
+      const longitude = normalizeDegree(
+        planet.longitude
+      );
+
+      const point = polarPoint(
+        cx,
+        cy,
+        radius,
+        longitude
+      );
+
+      const name = planet.name || planet.id || "Planet";
+
+      const symbol =
+        planetSymbols[name] ||
+        "•";
+
+      const displayName =
+        planetNames[name] ||
+        name;
+
+      const sign =
+        zodiacSigns[zodiacIndex(longitude)];
+
+      const position =
+        formatDegree(
+          zodiacDegree(longitude)
+        );
+
+      const house =
+        getHouse(
+          chart,
+          longitude
+        );
+
+      const retrograde =
+        Boolean(planet.retrograde);
+
+      const title =
+        `${displayName} — ${sign} ${position} — خانه ${house ?? "—"}${retrograde ? " — برگشتی" : ""}`;
+
+      markup += `
+        <g
+          class="planet-group"
+          transform="translate(${point.x} ${point.y})"
+        >
+          <circle
+            r="19"
+            class="planet-marker"
+          />
+
+          <text
+            x="0"
+            y="7"
+            class="planet-symbol"
+            text-anchor="middle"
+          >
+            ${symbol}
+          </text>
+
+          <title>${title}</title>
+        </g>
+      `;
+    }
+
+    return markup;
+  }
+
+  function createSvg(chart) {
+    const width = 760;
+    const height = 760;
+
+    const cx = width / 2;
+    const cy = height / 2;
+
+    const outerRadius = 310;
+    const zodiacRadius = 270;
+    const zodiacInnerRadius = 225;
+    const houseRadius = 218;
+    const planetRadius = 180;
+
+    const ascendant =
+      Number(
+        chart?.ascendant ??
+        chart?.angles?.ascendant ??
+        0
+      );
+
+    const mc =
+      Number(
+        chart?.mc ??
+        chart?.angles?.mc ??
+        0
+      );
+
+    const zodiacMarkup =
+      createZodiacMarkup(
+        cx,
+        cy,
+        zodiacRadius,
+        outerRadius,
+        zodiacInnerRadius
+      );
+
+    const houseMarkup =
+      createHouseMarkup(
+        chart,
+        cx,
+        cy,
+        houseRadius
+      );
+
+    const aspectMarkup =
+      createAspectMarkup(
+        chart,
+        cx,
+        cy,
+        planetRadius
+      );
+
+    const planetMarkup =
+      createPlanetMarkup(
+        chart,
+        cx,
+        cy,
+        planetRadius
+      );
+
+    const ascPoint =
+      polarPoint(
+        cx,
+        cy,
+        outerRadius + 10,
+        ascendant
+      );
+
+    const mcPoint =
+      polarPoint(
+        cx,
+        cy,
+        outerRadius + 10,
+        mc
+      );
+
+    return `
+      <svg
+        viewBox="0 0 ${width} ${height}"
+        class="birth-chart-svg"
+        role="img"
+        aria-label="نقشه تولد Astro Negah"
+      >
+        <defs>
+          <radialGradient
+            id="chartBackground"
+            cx="50%"
+            cy="50%"
+            r="65%"
+          >
+            <stop
+              offset="0%"
+              stop-color="#19143e"
+            />
+
+            <stop
+              offset="65%"
+              stop-color="#0d1130"
+            />
+
+            <stop
+              offset="100%"
+              stop-color="#070a1d"
+            />
+          </radialGradient>
+
+          <filter
+            id="chartGlow"
+            x="-50%"
+            y="-50%"
+            width="200%"
+            height="200%"
+          >
+            <feGaussianBlur
+              stdDeviation="5"
+              result="blur"
+            />
+
+            <feMerge>
+              <feMergeNode in="blur" />
+              <feMergeNode in="SourceGraphic" />
+            </feMerge>
+          </filter>
+        </defs>
+
+        <circle
+          cx="${cx}"
+          cy="${cy}"
+          r="${outerRadius + 18}"
+          fill="url(#chartBackground)"
+          class="chart-background"
+        />
+
+        <circle
+          cx="${cx}"
+          cy="${cy}"
+          r="${outerRadius}"
+          class="outer-ring"
+        />
+
+        ${zodiacMarkup}
+
+        <circle
+          cx="${cx}"
+          cy="${cy}"
+          r="${zodiacInnerRadius}"
+          class="inner-ring"
+        />
+
+        ${aspectMarkup}
+
+        ${houseMarkup}
+
+        <circle
+          cx="${cx}"
+          cy="${cy}"
+          r="${planetRadius}"
+          class="planet-orbit"
+        />
+
+        ${planetMarkup}
+
+        <line
+          x1="${cx}"
+          y1="${cy}"
+          x2="${ascPoint.x}"
+          y2="${ascPoint.y}"
+          class="angle-line asc-line"
+        />
+
+        <text
+          x="${ascPoint.x - 10}"
+          y="${ascPoint.y - 12}"
+          class="angle-label asc-label"
+          text-anchor="end"
+        >
+          ASC
+        </text>
+
+        <line
+          x1="${cx}"
+          y1="${cy}"
+          x2="${mcPoint.x}"
+          y2="${mcPoint.y}"
+          class="angle-line mc-line"
+        />
+
+        <text
+          x="${mcPoint.x + 10}"
+          y="${mcPoint.y - 12}"
+          class="angle-label mc-label"
+          text-anchor="start"
+        >
+          MC
+        </text>
+
+        <circle
+          cx="${cx}"
+          cy="${cy}"
+          r="72"
+          class="center-circle"
+          filter="url(#chartGlow)"
+        />
+
+        <text
+          x="${cx}"
+          y="${cy - 5}"
+          class="center-title"
+          text-anchor="middle"
+        >
+          ASTRO
+        </text>
+
+        <text
+          x="${cx}"
+          y="${cy + 18}"
+          class="center-subtitle"
+          text-anchor="middle"
+        >
+          NEGAH
+        </text>
+      </svg>
+    `;
+  }
+
+  function renderChart(chart) {
+    if (!root || !chart) {
+      return;
+    }
+
+    root.innerHTML = `
+      <div class="wheel-header">
+        <h3>نقشه تولد شما</h3>
+
+        <p>
+          چرخ زودیاک، خانه‌ها، سیارات و جنبه‌های اصلی
+          بر اساس محاسبات دقیق Swiss Ephemeris
+        </p>
+      </div>
+
+      <div class="wheel-container">
+        ${createSvg(chart)}
+      </div>
+
+      <div class="wheel-legend">
+        <div>
+          <span class="legend-dot planet-dot"></span>
+          سیارات
+        </div>
+
+        <div>
+          <span class="legend-dot aspect-dot"></span>
+          جنبه‌ها
+        </div>
+
+        <div>
+          <span class="legend-dot house-dot"></span>
+          خانه‌ها
+        </div>
+
+        <div>
+          <span class="legend-retro">R</span>
+          سیاره برگشتی
+        </div>
+      </div>
+    `;
+  }
+
+  window.addEventListener(
+    "astro-negah:birth-chart-ready",
+    (event) => {
+      renderChart(event.detail);
+    }
+  );
+</script>
+
+<style is:global>
+  .birth-chart-wheel {
+    width: 100%;
+    padding: 4px 0 10px;
+  }
+
+  .wheel-placeholder {
+    padding: 30px 20px;
+    border: 1px solid rgba(155, 124, 255, 0.18);
+    border-radius: 18px;
+    background: rgba(155, 124, 255, 0.05);
+    text-align: center;
+  }
+
+  .wheel-placeholder-title {
+    margin-bottom: 8px;
+    color: #c5b2ff;
+    font-size: 1.2rem;
+    font-weight: 700;
+  }
+
+  .wheel-placeholder-text {
+    color: #aaa7c7;
+    line-height: 1.9;
+  }
+
+  .wheel-header {
+    margin-bottom: 18px;
+    text-align: center;
+  }
+
+  .wheel-header h3 {
+    margin: 0 0 8px;
+    color: #d9ceff;
+    font-size: 1.25rem;
+  }
+
+  .wheel-header p {
+    margin: 0;
+    color: #aaa7c7;
+    line-height: 1.8;
+  }
+
+  .wheel-container {
+    width: min(100%, 760px);
+    margin: 0 auto;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  }
+
+  .birth-chart-svg {
+    display: block;
+    width: 100%;
+    height: auto;
+    max-width: 760px;
+    overflow: visible;
+  }
+
+  .chart-background {
+    fill: url(#chartBackground);
+  }
+
+  .outer-ring,
+  .inner-ring,
+  .planet-orbit {
+    fill: none;
+    stroke: rgba(197, 178, 255, 0.5);
+    stroke-width: 1.5;
+  }
+
+  .zodiac-divider {
+    stroke: rgba(197, 178, 255, 0.32);
+    stroke-width: 1;
+  }
+
+  .zodiac-label {
+    fill: #c5b2ff;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .zodiac-name {
+    fill: #aaa7c7;
+    font-size: 13px;
+  }
+
+  .house-line {
+    stroke: rgba(143, 156, 255, 0.3);
+    stroke-width: 1;
+  }
+
+  .house-label {
+    fill: #777fa8;
+    font-size: 13px;
+  }
+
+  .planet-orbit {
+    stroke: rgba(197, 178, 255, 0.25);
+  }
+
+  .planet-group {
+    cursor: default;
+  }
+
+  .planet-marker {
+    fill: #17133a;
+    stroke: #c5b2ff;
+    stroke-width: 1.5;
+  }
+
+  .planet-symbol {
+    fill: #f0ebff;
+    font-size: 18px;
+    font-weight: 700;
+  }
+
+  .aspect-line {
+    fill: none;
+    stroke-width: 1.2;
+    opacity: 0.45;
+  }
+
+  .aspect-conjunction {
+    stroke: #c5b2ff;
+  }
+
+  .aspect-sextile {
+    stroke: #8f9cff;
+  }
+
+  .aspect-square {
+    stroke: #e29a9a;
+  }
+
+  .aspect-trine {
+    stroke: #8fb9ff;
+  }
+
+  .aspect-opposition {
+    stroke: #d59acb;
+  }
+
+  .angle-line {
+    stroke-width: 2;
+    opacity: 0.8;
+  }
+
+  .asc-line {
+    stroke: #c5b2ff;
+  }
+
+  .mc-line {
+    stroke: #8f9cff;
+  }
+
+  .angle-label {
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  .asc-label {
+    fill: #c5b2ff;
+  }
+
+  .mc-label {
+    fill: #8f9cff;
+  }
+
+  .center-circle {
+    fill: rgba(25, 20, 62, 0.92);
+    stroke: rgba(197, 178, 255, 0.55);
+    stroke-width: 1.5;
+  }
+
+  .center-title {
+    fill: #e5ddff;
+    font-size: 18px;
+    font-weight: 800;
+    letter-spacing: 2px;
+  }
+
+  .center-subtitle {
+    fill: #aaa7c7;
+    font-size: 12px;
+    letter-spacing: 4px;
+  }
+
+  .wheel-legend {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 14px 22px;
+    margin-top: 18px;
+    color: #aaa7c7;
+    font-size: 0.9rem;
+  }
+
+  .wheel-legend > div {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+  }
+
+  .legend-dot {
+    width: 9px;
+    height: 9px;
+    border-radius: 50%;
+    display: inline-block;
+  }
+
+  .planet-dot {
+    background: #c5b2ff;
+  }
+
+  .aspect-dot {
+    background: #8f9cff;
+  }
+
+  .house-dot {
+    background: #6f7aa8;
+  }
+
+  .legend-retro {
+    color: #c5b2ff;
+    font-weight: 700;
+  }
+
+  @media (max-width: 700px) {
+    .wheel-header h3 {
+      font-size: 1.1rem;
+    }
+
+    .wheel-header p {
+      font-size: 0.9rem;
+    }
+
+    .zodiac-label {
+      font-size: 15px;
+    }
+
+    .zodiac-name {
+      font-size: 10px;
+    }
+
+    .planet-marker {
+      r: 16;
+    }
+
+    .planet-symbol {
+      font-size: 15px;
+    }
+  }
+</style>

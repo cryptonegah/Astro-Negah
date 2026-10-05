@@ -1,5 +1,7 @@
 ```astro
 ---
+import BirthChartWheel from "../components/BirthChartWheel.astro";
+
 const pageTitle = "نقشه تولد | Astro Negah";
 ---
 
@@ -29,11 +31,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
       body {
         margin: 0;
         min-height: 100vh;
-        font-family:
-          Vazirmatn,
-          Tahoma,
-          Arial,
-          sans-serif;
+        font-family: Vazirmatn, Tahoma, Arial, sans-serif;
         color: var(--text);
         background:
           radial-gradient(
@@ -57,6 +55,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
       .back {
         color: var(--muted);
         text-decoration: none;
+        transition: color 0.2s ease;
       }
 
       .back:hover {
@@ -81,7 +80,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
       }
 
       .intro {
-        max-width: 600px;
+        max-width: 680px;
         margin: 18px auto 0;
         color: var(--muted);
         line-height: 1.9;
@@ -157,6 +156,13 @@ const pageTitle = "نقشه تولد | Astro Negah";
         font: inherit;
         font-weight: 700;
         font-size: 1rem;
+        transition:
+          transform 0.2s ease,
+          opacity 0.2s ease;
+      }
+
+      button:hover:not(:disabled) {
+        transform: translateY(-1px);
       }
 
       button:disabled {
@@ -208,7 +214,14 @@ const pageTitle = "نقشه تولد | Astro Negah";
         padding: 16px 18px;
         border-radius: 14px;
         background: rgba(155, 124, 255, 0.07);
-        line-height: 1.9;
+        line-height: 2;
+      }
+
+      .summary-label {
+        display: block;
+        margin-bottom: 6px;
+        color: var(--accent-strong);
+        font-weight: 700;
       }
 
       .planet-grid {
@@ -227,12 +240,17 @@ const pageTitle = "نقشه تولد | Astro Negah";
       .planet-name {
         margin-bottom: 6px;
         font-weight: 700;
+        color: #eeeaff;
       }
 
       .planet-info {
         color: var(--muted);
         font-size: 0.92rem;
-        line-height: 1.8;
+        line-height: 1.9;
+      }
+
+      .retrograde {
+        color: #d9c8ff;
       }
 
       .aspect-list {
@@ -257,6 +275,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
         color: var(--muted);
         text-align: left;
         font-size: 0.9rem;
+        white-space: nowrap;
       }
 
       .cosmic-story {
@@ -273,6 +292,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
       }
 
       .cosmic-story h3 {
+        margin-top: 0;
         margin-bottom: 12px;
       }
 
@@ -280,7 +300,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
         margin: 0 0 22px;
         color: #ddd8ff;
         font-size: 1.08rem;
-        line-height: 1.9;
+        line-height: 2;
       }
 
       .story-block {
@@ -296,7 +316,11 @@ const pageTitle = "نقشه تولد | Astro Negah";
       .story-block p {
         margin: 0;
         color: var(--muted);
-        line-height: 1.9;
+        line-height: 2;
+      }
+
+      .wheel-mount {
+        margin-bottom: 0;
       }
 
       .error {
@@ -325,6 +349,10 @@ const pageTitle = "نقشه تولد | Astro Negah";
         .aspect-detail {
           text-align: right;
         }
+
+        .result-card {
+          padding: 20px;
+        }
       }
     </style>
   </head>
@@ -332,14 +360,17 @@ const pageTitle = "نقشه تولد | Astro Negah";
   <body>
     <main class="page">
       <div class="topbar">
-        <a class="back" href="/">← بازگشت به صفحه اصلی</a>
+        <a class="back" href="/">بازگشت به صفحه اصلی</a>
       </div>
 
       <header class="hero">
-        <p class="eyebrow">Astro Negah</p>
+        <p class="eyebrow">ASTRO NEGAH</p>
+
         <h1>نقشه تولد</h1>
+
         <p class="intro">
-          اطلاعات تولد خود را وارد کنید و نقشه منحصربه‌فرد آسمان تولدتان را کشف کنید.
+          اطلاعات تولد خود را وارد کنید تا نقشه تولد شخصی شما بر اساس
+          محاسبات دقیق نجومی و Swiss Ephemeris ساخته شود.
         </p>
       </header>
 
@@ -348,6 +379,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
           <div class="form-grid">
             <div class="field full">
               <label for="name">نام</label>
+
               <input
                 id="name"
                 type="text"
@@ -358,6 +390,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
 
             <div class="field">
               <label for="birthDate">تاریخ تولد</label>
+
               <input
                 id="birthDate"
                 type="date"
@@ -368,6 +401,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
 
             <div class="field">
               <label for="birthTime">زمان تولد</label>
+
               <input
                 id="birthTime"
                 type="time"
@@ -378,6 +412,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
 
             <div class="field full">
               <label for="timezone">منطقه زمانی</label>
+
               <input
                 id="timezone"
                 type="text"
@@ -389,6 +424,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
 
             <div class="field">
               <label for="latitude">عرض جغرافیایی</label>
+
               <input
                 id="latitude"
                 type="number"
@@ -401,6 +437,7 @@ const pageTitle = "نقشه تولد | Astro Negah";
 
             <div class="field">
               <label for="longitude">طول جغرافیایی</label>
+
               <input
                 id="longitude"
                 type="number"
@@ -421,168 +458,431 @@ const pageTitle = "نقشه تولد | Astro Negah";
 
         <section id="result" class="result" hidden>
           <div class="result-card">
+
             <h2>پروفایل کیهانی شما</h2>
 
-            <div class="section">
-              <h3>خلاصه شخصیت</h3>
-              <div id="personality-summary" class="summary"></div>
+            <!-- Birth Chart Wheel -->
+            <div class="section wheel-section">
+              <div id="birth-chart-wheel" class="wheel-mount">
+                <BirthChartWheel />
+              </div>
             </div>
 
+            <!-- Personality -->
+            <div class="section">
+              <h3>ویژگی شخصیتی</h3>
+
+              <div
+                id="personality-summary"
+                class="summary"
+              ></div>
+            </div>
+
+            <!-- Planets -->
             <div class="section">
               <h3>سیارات و خانه‌ها</h3>
-              <div id="planets-houses" class="planet-grid"></div>
+
+              <div
+                id="planets-houses"
+                class="planet-grid"
+              ></div>
             </div>
 
+            <!-- Aspects -->
             <div class="section">
               <h3>جنبه‌های سیاره‌ای</h3>
-              <div id="aspects" class="aspect-list"></div>
+
+              <div
+                id="aspects"
+                class="aspect-list"
+              ></div>
             </div>
 
+            <!-- Cosmic Story -->
             <div class="section">
-              <div id="cosmic-story" class="cosmic-story"></div>
+              <div
+                id="cosmic-story"
+                class="cosmic-story"
+              ></div>
             </div>
+
           </div>
         </section>
       </section>
     </main>
-  </body>
 
-  <script>
-    const form = document.getElementById("birth-chart-form");
-    const resultSection = document.getElementById("result");
-    const personalitySummary = document.getElementById("personality-summary");
-    const planetsHouses = document.getElementById("planets-houses");
-    const aspectsContainer = document.getElementById("aspects");
-    const cosmicStory = document.getElementById("cosmic-story");
-    const calculateButton = document.getElementById("calculate-button");
+    <script>
+      const form = document.getElementById("birth-chart-form");
+      const resultSection = document.getElementById("result");
+      const personalitySummary =
+        document.getElementById("personality-summary");
+      const planetsHouses =
+        document.getElementById("planets-houses");
+      const aspectsContainer =
+        document.getElementById("aspects");
+      const cosmicStory =
+        document.getElementById("cosmic-story");
+      const calculateButton =
+        document.getElementById("calculate-button");
 
-    form.addEventListener("submit", async (event) => {
-      event.preventDefault();
+      const signNames = {
+        Aries: "حمل",
+        Taurus: "ثور",
+        Gemini: "جوزا",
+        Cancer: "سرطان",
+        Leo: "اسد",
+        Virgo: "سنبله",
+        Libra: "میزان",
+        Scorpio: "عقرب",
+        Sagittarius: "قوس",
+        Capricorn: "جدی",
+        Aquarius: "دلو",
+        Pisces: "حوت"
+      };
 
-      const formData = new FormData(form);
+      const planetNames = {
+        Sun: "خورشید",
+        Moon: "ماه",
+        Mercury: "عطارد",
+        Venus: "زهره",
+        Mars: "مریخ",
+        Jupiter: "مشتری",
+        Saturn: "زحل",
+        Uranus: "اورانوس",
+        Neptune: "نپتون",
+        Pluto: "پلوتو"
+      };
 
-      const birthDate = formData.get("birthDate");
-      const birthTime = formData.get("birthTime");
-      const timezone = formData.get("timezone");
-      const latitude = formData.get("latitude");
-      const longitude = formData.get("longitude");
+      const aspectNames = {
+        Conjunction: "هم‌نشینی",
+        conjunction: "هم‌نشینی",
+        Sextile: "تسدیس",
+        sextile: "تسدیس",
+        Square: "تربیع",
+        square: "تربیع",
+        Trine: "تثلیث",
+        trine: "تثلیث",
+        Opposition: "مقابله",
+        opposition: "مقابله"
+      };
 
-      const params = new URLSearchParams({
-        birthDate,
-        birthTime,
-        timezone,
-        latitude,
-        longitude
-      });
+      const houseNames = {
+        1: "خانه اول",
+        2: "خانه دوم",
+        3: "خانه سوم",
+        4: "خانه چهارم",
+        5: "خانه پنجم",
+        6: "خانه ششم",
+        7: "خانه هفتم",
+        8: "خانه هشتم",
+        9: "خانه نهم",
+        10: "خانه دهم",
+        11: "خانه یازدهم",
+        12: "خانه دوازدهم"
+      };
 
-      resultSection.hidden = false;
-      personalitySummary.innerHTML = "<div>در حال محاسبه...</div>";
-      planetsHouses.innerHTML = "";
-      aspectsContainer.innerHTML = "";
-      cosmicStory.innerHTML = "";
-      calculateButton.disabled = true;
+      function translateSign(sign) {
+        return signNames[sign] || sign;
+      }
 
-      try {
-        const response = await fetch(
-          `/api/birth-chart?${params.toString()}`,
-          {
-            method: "GET",
-            headers: {
-              Accept: "application/json"
-            }
-          }
-        );
+      function translatePlanet(planet) {
+        return planetNames[planet] || planet;
+      }
 
-        const data = await response.json();
+      function translateAspect(aspect) {
+        return aspectNames[aspect] || aspect;
+      }
 
-        if (!response.ok || !data.ok) {
-          throw new Error(
-            data.error || "محاسبه نقشه تولد با خطا مواجه شد"
-          );
+      function houseLabel(house) {
+        return houseNames[house] || `خانه ${house}`;
+      }
+
+      function formatPosition(degree, minute) {
+        return `${degree}°${String(minute).padStart(2, "0")}′`;
+      }
+
+      function buildPersonality(chart) {
+        const sun = chart.planets.Sun;
+        const moon = chart.planets.Moon;
+        const ascendant = chart.ascendant_zodiac;
+
+        const sunSign = translateSign(sun.zodiac.sign);
+        const moonSign = translateSign(moon.zodiac.sign);
+        const ascendantSign = translateSign(ascendant.sign);
+
+        return `
+          <div class="summary-item">
+            <span class="summary-label">
+              ☉ خورشید در ${sunSign}
+            </span>
+
+            خورشید شما در برج ${sunSign} و در ${houseLabel(sun.house)}
+            قرار دارد. این جایگاه معمولاً با احساس مسئولیت، هدف‌مندی،
+            واقع‌گرایی و تمایل به ساختن چیزی ماندگار ارتباط دارد.
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">
+              ☽ ماه در ${moonSign}
+            </span>
+
+            ماه شما در برج ${moonSign} و در ${houseLabel(moon.house)}
+            قرار دارد. این ترکیب نشان‌دهنده دنیای احساسی عمیق و حساسیتی
+            قابل توجه نسبت به محیط اطراف است.
+          </div>
+
+          <div class="summary-item">
+            <span class="summary-label">
+              ↑ طالع در ${ascendantSign}
+            </span>
+
+            طالع شما در برج ${ascendantSign} و در
+            ${formatPosition(ascendant.degree, ascendant.minute)}
+            قرار دارد. این جایگاه بر نحوه ورود شما به موقعیت‌های جدید،
+            برداشت اولیه دیگران از شما و شیوه مواجهه با جهان اطراف اثر می‌گذارد.
+          </div>
+        `;
+      }
+
+      function buildPlanets(chart) {
+        return Object.entries(chart.planets)
+          .map(([planetKey, planet]) => {
+            const planetName = translatePlanet(planetKey);
+            const signName = translateSign(planet.zodiac.sign);
+
+            const position = formatPosition(
+              planet.zodiac.degree,
+              planet.zodiac.minute
+            );
+
+            const retrograde = planet.retrograde
+              ? `<span class="retrograde"> • برگشتی</span>`
+              : "";
+
+            return `
+              <div class="planet">
+                <div class="planet-name">
+                  ${planetName}
+                </div>
+
+                <div class="planet-info">
+                  ${signName} ${position}
+                  <br />
+                  ${houseLabel(planet.house)}
+                  ${retrograde}
+                </div>
+              </div>
+            `;
+          })
+          .join("");
+      }
+
+      function buildAspects(aspects) {
+        if (!aspects || aspects.length === 0) {
+          return `
+            <div class="aspect">
+              <div class="aspect-name">
+                جنبه اصلی ثبت‌شده‌ای وجود ندارد.
+              </div>
+            </div>
+          `;
         }
 
-        const interpretation = data.interpretation;
+        return aspects
+          .map((aspect) => {
+            const planet1 =
+              translatePlanet(aspect.planet1);
 
-        const personality = interpretation.personality_summary;
+            const planet2 =
+              translatePlanet(aspect.planet2);
 
-        personalitySummary.innerHTML = `
-          <div class="summary-item">${personality.sun}</div>
-          <div class="summary-item">${personality.moon}</div>
-          <div class="summary-item">${personality.ascendant}</div>
-        `;
+            const aspectName =
+              translateAspect(aspect.aspect);
 
-        planetsHouses.innerHTML =
-          interpretation.planets_and_houses
-            .map(
-              (planet) => `
-                <div class="planet">
-                  <div class="planet-name">${planet.planet}</div>
-                  <div class="planet-info">
-                    ${planet.sign} ${planet.degree}°${planet.minute}'
-                    · خانه ${planet.house}
-                    ${planet.retrograde ? " · برگشتی" : ""}
-                  </div>
+            return `
+              <div class="aspect">
+                <div class="aspect-name">
+                  ${planet1} — ${aspectName} — ${planet2}
                 </div>
-              `
-            )
-            .join("");
 
-        aspectsContainer.innerHTML =
-          interpretation.aspects
-            .map(
-              (aspect) => `
-                <div class="aspect">
-                  <div class="aspect-name">
-                    ${aspect.planet1} ${aspect.aspect} ${aspect.planet2}
-                  </div>
-                  <div class="aspect-detail">
-                    اورب ${aspect.orb.toFixed(2)}°
-                  </div>
+                <div class="aspect-detail">
+                  اورب ${Number(aspect.orb).toFixed(2)}°
                 </div>
-              `
-            )
-            .join("");
+              </div>
+            `;
+          })
+          .join("");
+      }
 
-        const story = interpretation.cosmic_story;
+      function buildCosmicStory(chart) {
+        const sun = chart.planets.Sun;
+        const moon = chart.planets.Moon;
+        const ascendant = chart.ascendant_zodiac;
 
-        cosmicStory.innerHTML = `
-          <h3>${story.title}</h3>
-          <p class="cosmic-intro">${story.intro}</p>
+        const sunSign = translateSign(sun.zodiac.sign);
+        const moonSign = translateSign(moon.zodiac.sign);
+        const ascendantSign =
+          translateSign(ascendant.sign);
+
+        return `
+          <h3>✦ داستان کیهانی شما</h3>
+
+          <p class="cosmic-intro">
+            نقشه تولد شما ترکیبی از خورشید در ${sunSign}،
+            ماه در ${moonSign} و طالع در ${ascendantSign} است.
+            این سه نقطه، یکی از مهم‌ترین لایه‌های شخصیت نجومی شما را
+            شکل می‌دهند: شیوه‌ای که خودتان را می‌سازید، دنیای درونی
+            خود را تجربه می‌کنید و با جهان روبه‌رو می‌شوید.
+          </p>
 
           <div class="story-block">
-            <strong>شخصیت شما</strong>
-            <p>${story.personality}</p>
+            <strong>هویت و مسیر رشد شما</strong>
+
+            <p>
+              خورشید ${sunSign} شما در ${houseLabel(sun.house)}
+              قرار دارد. این جایگاه نشان می‌دهد که بخشی از مسیر رشد
+              شخصی شما از طریق پیدا کردن معنای شخصی، ساختن هویت مستقل و
+              تبدیل تجربه‌های زندگی به چیزی ارزشمند شکل می‌گیرد.
+            </p>
           </div>
 
           <div class="story-block">
             <strong>دنیای احساسی شما</strong>
-            <p>${story.emotions}</p>
+
+            <p>
+              ماه ${moonSign} شما در ${houseLabel(moon.house)}
+              قرار گرفته است. این ترکیب می‌تواند نشان‌دهنده دنیای
+              احساسی پیچیده و عمیقی باشد که نیازمند توجه، امنیت و فضای
+              مناسب برای پردازش تجربه‌هاست.
+            </p>
           </div>
 
           <div class="story-block">
-            <strong>حضور و تأثیر شما</strong>
-            <p>${story.presence}</p>
+            <strong>حضور شما در جهان</strong>
+
+            <p>
+              طالع ${ascendantSign} باعث می‌شود دیگران در برخورد اول
+              شما را فردی منسجم، منعطف و ذهنی فعال تجربه کنند.
+              توانایی مشاهده، یادگیری و سازگار شدن با شرایط مختلف
+              می‌تواند یکی از ابزارهای طبیعی شما برای ارتباط با جهان باشد.
+            </p>
           </div>
 
           <div class="story-block">
-            <strong>الگوی کیهانی شما</strong>
-            <p>${story.reflection}</p>
+            <strong>ترکیب سه‌گانه شخصیت شما</strong>
+
+            <p>
+              جذاب‌ترین بخش این ترکیب، کنار هم قرار گرفتن انرژی
+              ${sunSign}، ${moonSign} و ${ascendantSign} است.
+              داستان شخصی شما احتمالاً در یک تعریف ساده خلاصه نمی‌شود؛
+              بلکه بخشی از رشد شما می‌تواند از هماهنگ کردن نیازهای درونی،
+              اهداف شخصی و شیوه حضور اجتماعی‌تان شکل بگیرد.
+            </p>
           </div>
         `;
-      } catch (error) {
-        personalitySummary.innerHTML = `
-          <div class="error">
-            ${
-              error instanceof Error
-                ? error.message
-                : "محاسبه نقشه تولد با خطا مواجه شد"
-            }
-          </div>
-        `;
-      } finally {
-        calculateButton.disabled = false;
       }
-    });
-  </script>
+
+      form.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        const formData = new FormData(form);
+
+        const birthDate =
+          formData.get("birthDate");
+
+        const birthTime =
+          formData.get("birthTime");
+
+        const timezone =
+          formData.get("timezone");
+
+        const latitude =
+          formData.get("latitude");
+
+        const longitude =
+          formData.get("longitude");
+
+        const params = new URLSearchParams({
+          birthDate,
+          birthTime,
+          timezone,
+          latitude,
+          longitude
+        });
+
+        resultSection.hidden = false;
+
+        personalitySummary.innerHTML = `
+          <div class="summary-item">
+            در حال محاسبه نقشه تولد...
+          </div>
+        `;
+
+        planetsHouses.innerHTML = "";
+        aspectsContainer.innerHTML = "";
+        cosmicStory.innerHTML = "";
+
+        calculateButton.disabled = true;
+
+        try {
+          const response = await fetch(
+            `/api/birth-chart?${params.toString()}`,
+            {
+              method: "GET",
+              headers: {
+                Accept: "application/json"
+              }
+            }
+          );
+
+          const data = await response.json();
+
+          if (!response.ok || !data.ok) {
+            throw new Error(
+              data.error ||
+                "محاسبه نقشه تولد با خطا مواجه شد."
+            );
+          }
+
+          const chart = data.chart;
+
+          personalitySummary.innerHTML =
+            buildPersonality(chart);
+
+          planetsHouses.innerHTML =
+            buildPlanets(chart);
+
+          aspectsContainer.innerHTML =
+            buildAspects(chart.aspects);
+
+          cosmicStory.innerHTML =
+            buildCosmicStory(chart);
+
+          window.dispatchEvent(
+            new CustomEvent(
+              "astro-negah:birth-chart-ready",
+              {
+                detail: chart
+              }
+            )
+          );
+
+        } catch (error) {
+          personalitySummary.innerHTML = `
+            <div class="error">
+              ${
+                error instanceof Error
+                  ? error.message
+                  : "محاسبه نقشه تولد با خطا مواجه شد."
+              }
+            </div>
+          `;
+
+        } finally {
+          calculateButton.disabled = false;
+        }
+      });
+    </script>
+  </body>
 </html>
 ```

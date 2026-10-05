@@ -3,7 +3,12 @@ Astro Negah
 Birth Chart Interpretation Engine
 
 This module converts validated birth-chart data
-into structured interpretation sections.
+into a structured, professional, warm, and personalized
+astrological interpretation.
+
+Important:
+- This module does not calculate astronomical positions.
+- Swiss Ephemeris remains the authoritative calculation engine.
 """
 
 
@@ -18,32 +23,63 @@ def format_position(zodiac):
     )
 
 
+def house_label(house):
+    """
+    Return a readable ordinal house label.
+    """
+
+    if house == 1:
+        return "1st"
+    if house == 2:
+        return "2nd"
+    if house == 3:
+        return "3rd"
+
+    return f"{house}th"
+
+
 def interpret_personality(chart):
     """
-    Create a high-level personality summary
-    from the core birth-chart placements.
+    Create a professional but warm personality interpretation
+    from the Sun, Moon, and Ascendant.
     """
 
     sun = chart["planets"]["Sun"]["zodiac"]
     moon = chart["planets"]["Moon"]["zodiac"]
     ascendant = chart["ascendant_zodiac"]
 
+    sun_house = chart["planets"]["Sun"]["house"]
+    moon_house = chart["planets"]["Moon"]["house"]
+
     return {
         "title": "Personality Summary",
 
         "sun": (
-            f"Your Sun is in {sun['sign']} "
-            f"at {format_position(sun)}."
+            f"Your Sun is in {sun['sign']} at {format_position(sun)}, "
+            f"placed in the {house_label(sun_house)} house. "
+            "This combination points toward a strong sense of purpose, "
+            "responsibility, and a desire to create something meaningful "
+            "and lasting. You are likely to value progress that has real "
+            "substance rather than temporary recognition."
         ),
 
         "moon": (
-            f"Your Moon is in {moon['sign']} "
-            f"at {format_position(moon)}."
+            f"Your Moon is in {moon['sign']} at {format_position(moon)}, "
+            f"placed in the {house_label(moon_house)} house. "
+            "This suggests a deep and emotionally perceptive inner world. "
+            "You may feel things more intensely than you immediately show, "
+            "and you may need private time to process important experiences. "
+            "A sense of purpose in everyday life can help you feel emotionally "
+            "grounded."
         ),
 
         "ascendant": (
             f"Your Ascendant is in {ascendant['sign']} "
-            f"at {format_position(ascendant)}."
+            f"at {format_position(ascendant)}. "
+            "This gives your outward presence a curious, adaptable, and "
+            "observant quality. You may naturally approach life through "
+            "questions, conversation, learning, and the exploration of "
+            "different perspectives."
         )
     }
 
@@ -94,45 +130,67 @@ def interpret_aspects(chart):
 
 def build_cosmic_story(chart):
     """
-    Build the complete interpretation result,
-    including the final Cosmic Story section.
+    Build the complete personalized Cosmic Story.
     """
 
     personality = interpret_personality(chart)
     planets = interpret_planets(chart)
     aspects = interpret_aspects(chart)
 
-    sun_sign = chart["planets"]["Sun"]["zodiac"]["sign"]
-    moon_sign = chart["planets"]["Moon"]["zodiac"]["sign"]
-    ascendant_sign = chart["ascendant_zodiac"]["sign"]
+    sun = chart["planets"]["Sun"]["zodiac"]
+    moon = chart["planets"]["Moon"]["zodiac"]
+    ascendant = chart["ascendant_zodiac"]
+
+    sun_house = chart["planets"]["Sun"]["house"]
+    moon_house = chart["planets"]["Moon"]["house"]
+
+    sun_sign = sun["sign"]
+    moon_sign = moon["sign"]
+    ascendant_sign = ascendant["sign"]
 
     cosmic_story = {
         "title": "✨ Your Cosmic Story",
 
         "intro": (
-            f"Your cosmic story begins with a {sun_sign} Sun, "
-            f"a {moon_sign} Moon, and a {ascendant_sign} Ascendant."
+            f"Your chart brings together a {sun_sign} Sun, "
+            f"a {moon_sign} Moon, and a {ascendant_sign} Ascendant. "
+            "Together, these three points create the foundation of your "
+            "astrological personality: how you express yourself, how you "
+            "experience life internally, and how you meet the world."
         ),
 
         "personality": (
-            "Your Sun represents your core identity and the direction "
-            "you naturally seek in life."
+            f"With your Sun in {sun_sign} in the {house_label(sun_house)} house, "
+            "your sense of identity is closely connected with purpose, "
+            "growth, and the relationships or experiences that help you "
+            "understand your own direction. You are not simply looking for "
+            "activity; you are looking for something that feels worthwhile."
         ),
 
         "emotions": (
-            "Your Moon reflects your emotional world, inner needs, "
-            "and the way you process experiences."
+            f"Your {moon_sign} Moon in the {house_label(moon_house)} house "
+            "adds emotional depth and sensitivity to this picture. "
+            "Your inner world may be more complex than people first realize. "
+            "You may need trust, privacy, and meaningful routines before you "
+            "feel completely comfortable opening up."
         ),
 
         "presence": (
-            "Your Ascendant describes the way you meet the world "
-            "and the impression you naturally create."
+            f"Your {ascendant_sign} Ascendant shapes the way others first "
+            "experience you. It gives your presence a more curious, flexible, "
+            "and mentally active quality. You may naturally observe your "
+            "surroundings, gather information, and adapt your communication "
+            "to the person or situation in front of you."
         ),
 
         "reflection": (
-            f"Together, your {sun_sign} Sun, {moon_sign} Moon, "
-            f"and {ascendant_sign} Ascendant create a unique "
-            "combination of identity, emotion, and outward expression."
+            f"The most interesting part of this combination is the contrast "
+            f"between your {sun_sign} Sun, {moon_sign} Moon, and "
+            f"{ascendant_sign} Ascendant. There is a meeting here between "
+            "purpose, emotional depth, and curiosity. Your chart suggests "
+            "that your personal story is not about fitting into one simple "
+            "description, but about learning how these different sides of "
+            "your personality can work together."
         )
     }
 
