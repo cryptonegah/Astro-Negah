@@ -1,8 +1,9 @@
+```astro
 ---
-const pageTitle = "Birth Chart | Astro Negah";
+const pageTitle = "نقشه تولد | Astro Negah";
 ---
 
-<html lang="en" dir="ltr">
+<html lang="fa" dir="rtl">
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
@@ -29,12 +30,9 @@ const pageTitle = "Birth Chart | Astro Negah";
         margin: 0;
         min-height: 100vh;
         font-family:
-          Inter,
-          ui-sans-serif,
-          system-ui,
-          -apple-system,
-          BlinkMacSystemFont,
-          "Segoe UI",
+          Vazirmatn,
+          Tahoma,
+          Arial,
           sans-serif;
         color: var(--text);
         background:
@@ -74,8 +72,7 @@ const pageTitle = "Birth Chart | Astro Negah";
         margin: 0 0 10px;
         color: var(--accent-strong);
         font-size: 0.8rem;
-        letter-spacing: 0.18em;
-        text-transform: uppercase;
+        letter-spacing: 0.12em;
       }
 
       h1 {
@@ -87,7 +84,7 @@ const pageTitle = "Birth Chart | Astro Negah";
         max-width: 600px;
         margin: 18px auto 0;
         color: var(--muted);
-        line-height: 1.7;
+        line-height: 1.9;
       }
 
       .card {
@@ -130,6 +127,14 @@ const pageTitle = "Birth Chart | Astro Negah";
         color: var(--text);
         background: var(--input);
         font: inherit;
+        direction: rtl;
+      }
+
+      input[type="date"],
+      input[type="time"],
+      input[type="number"] {
+        direction: ltr;
+        text-align: left;
       }
 
       input:focus {
@@ -203,7 +208,7 @@ const pageTitle = "Birth Chart | Astro Negah";
         padding: 16px 18px;
         border-radius: 14px;
         background: rgba(155, 124, 255, 0.07);
-        line-height: 1.7;
+        line-height: 1.9;
       }
 
       .planet-grid {
@@ -227,7 +232,7 @@ const pageTitle = "Birth Chart | Astro Negah";
       .planet-info {
         color: var(--muted);
         font-size: 0.92rem;
-        line-height: 1.6;
+        line-height: 1.8;
       }
 
       .aspect-list {
@@ -250,7 +255,7 @@ const pageTitle = "Birth Chart | Astro Negah";
 
       .aspect-detail {
         color: var(--muted);
-        text-align: right;
+        text-align: left;
         font-size: 0.9rem;
       }
 
@@ -275,7 +280,7 @@ const pageTitle = "Birth Chart | Astro Negah";
         margin: 0 0 22px;
         color: #ddd8ff;
         font-size: 1.08rem;
-        line-height: 1.8;
+        line-height: 1.9;
       }
 
       .story-block {
@@ -291,7 +296,7 @@ const pageTitle = "Birth Chart | Astro Negah";
       .story-block p {
         margin: 0;
         color: var(--muted);
-        line-height: 1.75;
+        line-height: 1.9;
       }
 
       .error {
@@ -318,7 +323,7 @@ const pageTitle = "Birth Chart | Astro Negah";
         }
 
         .aspect-detail {
-          text-align: left;
+          text-align: right;
         }
       }
     </style>
@@ -327,14 +332,14 @@ const pageTitle = "Birth Chart | Astro Negah";
   <body>
     <main class="page">
       <div class="topbar">
-        <a class="back" href="/">← Back to Home</a>
+        <a class="back" href="/">← بازگشت به صفحه اصلی</a>
       </div>
 
       <header class="hero">
         <p class="eyebrow">Astro Negah</p>
-        <h1>Birth Chart</h1>
+        <h1>نقشه تولد</h1>
         <p class="intro">
-          Enter your birth information and discover your unique cosmic chart.
+          اطلاعات تولد خود را وارد کنید و نقشه منحصربه‌فرد آسمان تولدتان را کشف کنید.
         </p>
       </header>
 
@@ -342,17 +347,17 @@ const pageTitle = "Birth Chart | Astro Negah";
         <form id="birth-chart-form">
           <div class="form-grid">
             <div class="field full">
-              <label for="name">Name</label>
+              <label for="name">نام</label>
               <input
                 id="name"
                 type="text"
                 name="name"
-                placeholder="Your name"
+                placeholder="نام خود را وارد کنید"
               />
             </div>
 
             <div class="field">
-              <label for="birthDate">Birth Date</label>
+              <label for="birthDate">تاریخ تولد</label>
               <input
                 id="birthDate"
                 type="date"
@@ -362,7 +367,7 @@ const pageTitle = "Birth Chart | Astro Negah";
             </div>
 
             <div class="field">
-              <label for="birthTime">Birth Time</label>
+              <label for="birthTime">زمان تولد</label>
               <input
                 id="birthTime"
                 type="time"
@@ -372,7 +377,7 @@ const pageTitle = "Birth Chart | Astro Negah";
             </div>
 
             <div class="field full">
-              <label for="timezone">Timezone</label>
+              <label for="timezone">منطقه زمانی</label>
               <input
                 id="timezone"
                 type="text"
@@ -383,7 +388,7 @@ const pageTitle = "Birth Chart | Astro Negah";
             </div>
 
             <div class="field">
-              <label for="latitude">Latitude</label>
+              <label for="latitude">عرض جغرافیایی</label>
               <input
                 id="latitude"
                 type="number"
@@ -395,7 +400,7 @@ const pageTitle = "Birth Chart | Astro Negah";
             </div>
 
             <div class="field">
-              <label for="longitude">Longitude</label>
+              <label for="longitude">طول جغرافیایی</label>
               <input
                 id="longitude"
                 type="number"
@@ -409,27 +414,27 @@ const pageTitle = "Birth Chart | Astro Negah";
 
           <div class="button-row">
             <button id="calculate-button" type="submit">
-              Calculate Birth Chart
+              محاسبه نقشه تولد
             </button>
           </div>
         </form>
 
         <section id="result" class="result" hidden>
           <div class="result-card">
-            <h2>Your Cosmic Profile</h2>
+            <h2>پروفایل کیهانی شما</h2>
 
             <div class="section">
-              <h3>Personality Summary</h3>
+              <h3>خلاصه شخصیت</h3>
               <div id="personality-summary" class="summary"></div>
             </div>
 
             <div class="section">
-              <h3>Planets & Houses</h3>
+              <h3>سیارات و خانه‌ها</h3>
               <div id="planets-houses" class="planet-grid"></div>
             </div>
 
             <div class="section">
-              <h3>Aspects</h3>
+              <h3>جنبه‌های سیاره‌ای</h3>
               <div id="aspects" class="aspect-list"></div>
             </div>
 
@@ -471,7 +476,7 @@ const pageTitle = "Birth Chart | Astro Negah";
       });
 
       resultSection.hidden = false;
-      personalitySummary.innerHTML = "<div>Calculating...</div>";
+      personalitySummary.innerHTML = "<div>در حال محاسبه...</div>";
       planetsHouses.innerHTML = "";
       aspectsContainer.innerHTML = "";
       cosmicStory.innerHTML = "";
@@ -492,7 +497,7 @@ const pageTitle = "Birth Chart | Astro Negah";
 
         if (!response.ok || !data.ok) {
           throw new Error(
-            data.error || "Birth chart calculation failed"
+            data.error || "محاسبه نقشه تولد با خطا مواجه شد"
           );
         }
 
@@ -514,8 +519,8 @@ const pageTitle = "Birth Chart | Astro Negah";
                   <div class="planet-name">${planet.planet}</div>
                   <div class="planet-info">
                     ${planet.sign} ${planet.degree}°${planet.minute}'
-                    · House ${planet.house}
-                    ${planet.retrograde ? " · Retrograde" : ""}
+                    · خانه ${planet.house}
+                    ${planet.retrograde ? " · برگشتی" : ""}
                   </div>
                 </div>
               `
@@ -531,7 +536,7 @@ const pageTitle = "Birth Chart | Astro Negah";
                     ${aspect.planet1} ${aspect.aspect} ${aspect.planet2}
                   </div>
                   <div class="aspect-detail">
-                    Orb ${aspect.orb.toFixed(2)}°
+                    اورب ${aspect.orb.toFixed(2)}°
                   </div>
                 </div>
               `
@@ -545,22 +550,22 @@ const pageTitle = "Birth Chart | Astro Negah";
           <p class="cosmic-intro">${story.intro}</p>
 
           <div class="story-block">
-            <strong>Your Personality</strong>
+            <strong>شخصیت شما</strong>
             <p>${story.personality}</p>
           </div>
 
           <div class="story-block">
-            <strong>Your Emotional World</strong>
+            <strong>دنیای احساسی شما</strong>
             <p>${story.emotions}</p>
           </div>
 
           <div class="story-block">
-            <strong>Your Presence</strong>
+            <strong>حضور و تأثیر شما</strong>
             <p>${story.presence}</p>
           </div>
 
           <div class="story-block">
-            <strong>Your Cosmic Pattern</strong>
+            <strong>الگوی کیهانی شما</strong>
             <p>${story.reflection}</p>
           </div>
         `;
@@ -570,7 +575,7 @@ const pageTitle = "Birth Chart | Astro Negah";
             ${
               error instanceof Error
                 ? error.message
-                : "Birth chart calculation failed"
+                : "محاسبه نقشه تولد با خطا مواجه شد"
             }
           </div>
         `;
@@ -580,3 +585,4 @@ const pageTitle = "Birth Chart | Astro Negah";
     });
   </script>
 </html>
+```
