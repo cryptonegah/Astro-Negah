@@ -6,7 +6,9 @@
 - Local path: `C:\Users\ASUS\Astro-Negah`
 - GitHub: `https://github.com/cryptonegah/Astro-Negah.git`
 - Main branch: `main`
-- Current validated engine commit: `cd45fb1`
+- Current local HEAD: `499f1bb`
+- Remote `origin/main`: `f95646b`
+- Local commits ahead of origin: 2
 - Goal: Build a real, expandable global astrology platform, initially with Persian content/UI.
 - Principle: No paid services, paid APIs, or subscriptions if a reliable free/open-source/local alternative exists.
 
@@ -17,26 +19,29 @@
 - Wait for the user's output before continuing.
 - Prefer simple, practical, testable solutions.
 - Before changing any existing file, inspect its current state first.
-- Do not change the Astro Negah website while the calculation engine is being validated.
 - When editing code, prefer complete file replacement when practical.
+- Preserve the existing Astro Negah visual design.
 
 ## Current Website State
 
 - Astro project is installed and runs locally.
-- Development server has previously worked at `http://localhost:4321/`.
+- Development server works at `http://localhost:4321/`.
 - Homepage has a dark navy/purple visual direction.
-- Main headline direction: "Your Story Is Written In The Stars".
+- Main headline: `Your Story Is Written In The Stars`.
 - Zodiac section contains the 12 signs.
 - Custom SVG zodiac symbols are being used instead of the old Unicode zodiac symbols.
 - `public\zodiac\aries.svg` exists.
 - Homepage feature areas include Birth Chart, Daily Horoscope, and Zodiac Signs.
-- Website files were intentionally kept unchanged during calculation-engine validation.
+- Birth Chart page exists at `/birth-chart`.
+- Birth Chart page is Persian and uses RTL layout.
+- Persian rendering was verified in the browser.
+- Website design should be preserved while functionality is expanded.
 
 ## Astrology Calculation Engine
 
 ### Status
 
-The independent Birth Chart calculation engine has now been implemented and validated.
+The Birth Chart calculation engine has been implemented and validated.
 
 ### Engine
 
@@ -53,7 +58,7 @@ The independent Birth Chart calculation engine has now been implemented and vali
 
 `birth_chart.py`
 
-It currently provides:
+It provides:
 
 - Local birth time → UTC conversion
 - Julian Day calculation
@@ -72,19 +77,27 @@ It currently provides:
   - Opposition
 - Aspect orb calculation
 
-### Validation Test
+### Important Rule
 
-Test file:
+Swiss Ephemeris is the authoritative calculation engine for Astro Negah.
+
+Do not replace it with manual astronomical formulas.
+
+Do not modify `birth_chart.py` unless a specific validated reason is established.
+
+## Validation
+
+### Test File
 
 `test_birth_chart.py`
 
-The automatic validation currently checks:
+The automatic validation checks:
 
 - Ascendant sign and degree
 - MC sign and degree
 - Houses for all 10 planets
-- Sun–Saturn Sextile
-- Sun–Saturn orb precision
+- Sun-Saturn aspect
+- Sun-Saturn orb precision
 - Tehran timezone conversion
 - New York DST conversion
 - Mercury retrograde detection
@@ -95,48 +108,124 @@ Current result:
 
 ### Reference Sample
 
-A Swiss Ephemeris sample for:
-
-- Date: 2000-01-01
-- Time: 12:00 UTC
+- Date: `2000-01-01`
+- Time: `12:00 UTC`
 - Location: Tehran
 
-was used during validation.
-
-The validated Ascendant is approximately:
+Validated Ascendant:
 
 `Gemini 20.52°`
 
-The previous manual Ascendant formula that produced approximately Sagittarius 20.52° was rejected and is not used.
+The previous manual Ascendant calculation that produced approximately Sagittarius 20.52° was rejected and is not used.
 
-Swiss Ephemeris is the authoritative calculation engine for Astro Negah.
+## Birth Chart Integration
 
-## Git Status
+Birth Chart calculation has now been connected to the Astro Negah website.
 
-Validated engine commit:
+### API
 
-`cd45fb1 Add validated Swiss Ephemeris birth chart engine`
+File:
 
-Files included in that commit:
+`src/pages/api/birth-chart.js`
 
-- `birth_chart.py`
-- `test_birth_chart.py`
+The API:
 
-Website files were not modified by this commit.
+1. Receives birth date.
+2. Receives birth time.
+3. Receives timezone.
+4. Receives latitude.
+5. Receives longitude.
+6. Calls `calculate_birth_chart_local(...)`.
+7. Calls `build_cosmic_story(...)`.
+8. Returns chart data and interpretation as JSON.
 
-At the last checkpoint, the only untracked file was:
+The API uses Python 3.11 and explicitly configures stdout as UTF-8 so Persian/Unicode interpretation output works correctly on Windows.
 
-`ASTRO-NEGAH-CONTINUITY.md`
+### API Validation
 
-This continuity file is intentionally being updated separately.
+A real API request was tested successfully using:
 
-## Important Project Rules
+- Birth date: `2000-01-01`
+- Birth time: `15:30`
+- Timezone: `Asia/Tehran`
+- Latitude: `35.6892`
+- Longitude: `51.3890`
 
-- Do not replace Swiss Ephemeris with manual astronomical formulas for the production Birth Chart engine.
-- Do not integrate the calculation engine into the website until the current validation checkpoint is explicitly accepted.
-- Do not modify existing website files unnecessarily.
-- Keep the implementation simple and local where possible.
-- Avoid paid APIs and services when a reliable free/local alternative exists.
+Result:
+
+`{"ok":true,...}`
+
+The response contained:
+
+- `chart`
+- `interpretation`
+- `personality_summary`
+- `planets_and_houses`
+- `aspects`
+- `cosmic_story`
+
+## Interpretation Engine
+
+### File
+
+`interpretation.py`
+
+Current role:
+
+- Converts validated chart data into structured interpretation sections.
+- Formats zodiac positions correctly.
+- Produces personality summary data.
+- Produces planet/house data.
+- Produces aspect data.
+- Produces a `Your Cosmic Story` section.
+
+Current output structure:
+
+- `personality_summary`
+- `planets_and_houses`
+- `aspects`
+- `cosmic_story`
+
+The current interpretation layer is intentionally simple and structured.
+
+A future phase can make the interpretation more detailed and user-friendly without changing the underlying astronomical calculations.
+
+## Birth Chart UI
+
+### File
+
+`src/pages/birth-chart.astro`
+
+Current status:
+
+- Integrated with the Birth Chart API.
+- Persianized.
+- RTL layout enabled.
+- Browser rendering verified.
+- Existing visual design preserved.
+
+The page is currently functional and connected to the calculation/interpretation pipeline.
+
+## Git History
+
+Important commits:
+
+- `cd45fb1` — Add validated Swiss Ephemeris birth chart engine
+- `f95646b` — Add birth chart interpretation and UI
+- `9e01590` — Persianize birth chart page
+- `499f1bb` — Fix interpretation output formatting
+
+Current local HEAD:
+
+`499f1bb`
+
+Current remote:
+
+`origin/main` → `f95646b`
+
+Local branch is currently 2 commits ahead of `origin/main`.
+
+Working tree was confirmed clean before updating this continuity document.
 
 ## Current Exact Checkpoint
 
@@ -146,36 +235,61 @@ Completed:
 2. Swiss Ephemeris installed successfully.
 3. `birth_chart.py` implemented.
 4. `test_birth_chart.py` implemented.
-5. Automatic validation passed.
-6. Website accidental modification was detected and restored.
-7. `birth_chart.py` and `test_birth_chart.py` committed as:
-   `cd45fb1`
-8. Git status confirmed no modified website files.
+5. Automatic Birth Chart validation passed.
+6. Swiss Ephemeris confirmed as authoritative calculation engine.
+7. Birth Chart API integration completed.
+8. Interpretation engine integrated.
+9. Real API request tested successfully.
+10. Birth Chart page integrated with the API.
+11. Birth Chart page Persianized.
+12. Persian browser rendering verified.
+13. Interpretation output formatting fixed.
+14. Local Git history is clean.
+15. Current local HEAD is `499f1bb`.
 
-Current state:
+## Current Phase
 
-- Calculation engine: VALIDATED
-- Automatic test: PASSED
-- Website integration: NOT STARTED
-- Main website files: PROTECTED / UNCHANGED
+The project is now beyond calculation-engine validation.
+
+Current phase:
+
+**Birth Chart product integration and interpretation refinement**
+
+The next work should focus on improving the actual user experience and interpretation quality while keeping the validated Swiss Ephemeris calculation layer stable.
+
+## Important Project Rules
+
+- Do not replace Swiss Ephemeris with manual astronomical formulas.
+- Do not modify `birth_chart.py` unnecessarily.
+- Preserve validated calculation results.
+- Preserve the existing dark navy/purple visual direction.
+- Keep the website Persian/RTL where appropriate.
+- Keep implementation simple and local where possible.
+- Avoid paid APIs and services when reliable free/local alternatives exist.
+- Test each meaningful change locally before committing.
+- Work one step at a time.
 
 ## Next Planned Phase
 
-The next phase is to decide how the validated calculation engine should be connected to Astro Negah.
+The next logical phase is to improve the Birth Chart interpretation experience.
 
-Before making any website changes:
+Potential sequence:
 
-1. Inspect the current Birth Chart page.
-2. Decide the smallest integration path.
-3. Preserve the existing website design.
-4. Connect the validated engine without replacing its calculation logic.
-5. Test the result locally.
-6. Only then commit the integration.
+1. Inspect the current Birth Chart page and API output together.
+2. Identify the smallest useful UX improvement.
+3. Improve interpretation wording and presentation.
+4. Test with the existing sample birth data.
+5. Verify the API still returns valid JSON.
+6. Run the Astro build.
+7. Commit the verified change.
+8. Push the completed local commits to GitHub when appropriate.
+
+No change to the validated astronomical calculation engine is planned unless a real issue is discovered.
 
 ## Resume Phrase
 
 If a new chat is opened, start with:
 
-"ادامه Astro Negah از فایل ASTRO-NEGAH-CONTINUITY.md"
+`ادامه پروژه Astro Negah — از وضعیت ثبت‌شده در ASTRO-NEGAH-CONTINUITY.md ادامه بده.`
 
 Then review this checkpoint before giving the next command.
