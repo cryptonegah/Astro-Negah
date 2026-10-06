@@ -1,5 +1,20 @@
 ---
 const title = "طالع‌بینی روزانه | Astro Negah";
+
+const signs = [
+  { name: "حمل", latin: "Aries", icon: "/zodiac/aries.svg" },
+  { name: "ثور", latin: "Taurus", icon: "/zodiac/taurus.svg" },
+  { name: "جوزا", latin: "Gemini", icon: "/zodiac/gemini.svg" },
+  { name: "سرطان", latin: "Cancer", icon: "/zodiac/cancer.svg" },
+  { name: "اسد", latin: "Leo", icon: "/zodiac/leo.svg" },
+  { name: "سنبله", latin: "Virgo", icon: "/zodiac/virgo.svg" },
+  { name: "میزان", latin: "Libra", icon: "/zodiac/libra.svg" },
+  { name: "عقرب", latin: "Scorpio", icon: "/zodiac/scorpio.svg" },
+  { name: "قوس", latin: "Sagittarius", icon: "/zodiac/sagittarius.svg" },
+  { name: "جدی", latin: "Capricorn", icon: "/zodiac/capricorn.svg" },
+  { name: "دلو", latin: "Aquarius", icon: "/zodiac/aquarius.svg" },
+  { name: "حوت", latin: "Pisces", icon: "/zodiac/pisces.svg" },
+];
 ---
 
 <html lang="fa" dir="rtl">
@@ -7,17 +22,163 @@ const title = "طالع‌بینی روزانه | Astro Negah";
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width" />
     <title>{title}</title>
+
+    <style>
+      :global(*) {
+        box-sizing: border-box;
+      }
+
+      :global(body) {
+        margin: 0;
+        min-height: 100vh;
+        font-family: Tahoma, Arial, sans-serif;
+        color: #f5f3ff;
+        background:
+          radial-gradient(circle at 50% 0%, rgba(116, 74, 190, 0.28), transparent 35%),
+          linear-gradient(145deg, #080b24 0%, #11123a 48%, #1a1040 100%);
+      }
+
+      main {
+        width: min(1100px, calc(100% - 32px));
+        margin: 0 auto;
+        padding: 36px 0 70px;
+      }
+
+      .back {
+        display: inline-block;
+        color: #cfc8ff;
+        text-decoration: none;
+        margin-bottom: 42px;
+        transition: color 0.2s ease;
+      }
+
+      .back:hover {
+        color: #ffffff;
+      }
+
+      .hero {
+        text-align: center;
+        margin-bottom: 48px;
+      }
+
+      .eyebrow {
+        color: #a996ff;
+        font-size: 0.9rem;
+        letter-spacing: 0.08em;
+        margin-bottom: 12px;
+      }
+
+      h1 {
+        margin: 0 0 16px;
+        font-size: clamp(2rem, 5vw, 3.5rem);
+        line-height: 1.2;
+      }
+
+      .intro {
+        max-width: 680px;
+        margin: 0 auto;
+        color: #c9c5dd;
+        font-size: 1.05rem;
+        line-height: 2;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 18px;
+      }
+
+      .card {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        min-height: 190px;
+        padding: 24px 16px;
+        border: 1px solid rgba(170, 145, 255, 0.2);
+        border-radius: 20px;
+        background: rgba(255, 255, 255, 0.055);
+        box-shadow: 0 12px 35px rgba(0, 0, 0, 0.18);
+        text-decoration: none;
+        color: #ffffff;
+        transition:
+          transform 0.2s ease,
+          border-color 0.2s ease,
+          background 0.2s ease;
+      }
+
+      .card:hover {
+        transform: translateY(-5px);
+        border-color: rgba(180, 157, 255, 0.65);
+        background: rgba(255, 255, 255, 0.09);
+      }
+
+      .icon {
+        width: 62px;
+        height: 62px;
+        margin-bottom: 16px;
+        object-fit: contain;
+      }
+
+      .name {
+        font-size: 1.15rem;
+        font-weight: 700;
+        margin-bottom: 7px;
+      }
+
+      .latin {
+        color: #aaa3c5;
+        font-size: 0.82rem;
+      }
+
+      @media (max-width: 850px) {
+        .grid {
+          grid-template-columns: repeat(3, 1fr);
+        }
+      }
+
+      @media (max-width: 600px) {
+        main {
+          width: min(100% - 22px, 500px);
+          padding-top: 24px;
+        }
+
+        .grid {
+          grid-template-columns: repeat(2, 1fr);
+          gap: 12px;
+        }
+
+        .card {
+          min-height: 165px;
+        }
+      }
+    </style>
   </head>
 
   <body>
     <main>
-      <a href="/">← بازگشت به صفحه اصلی</a>
+      <a class="back" href="/">← بازگشت به صفحه اصلی</a>
 
-      <h1>طالع‌بینی روزانه</h1>
+      <section class="hero">
+        <div class="eyebrow">ASTRO NEGAH</div>
+        <h1>طالع‌بینی روزانه</h1>
+        <p class="intro">
+          نشان ماه تولدت را انتخاب کن و نگاهی به انرژی‌ها و فرصت‌های امروز
+          بینداز.
+        </p>
+      </section>
 
-      <p>
-        هر روز نگاهی تازه به انرژی‌ها و نشانه‌های آسمان داشته باش.
-      </p>
+      <section class="grid" aria-label="نشانه‌های زودیاک">
+        {
+          signs.map((sign) => (
+            <a class="card" href={`/zodiac/${sign.latin.toLowerCase()}`}>
+              <img class="icon" src={sign.icon} alt={`نماد ${sign.name}`} />
+              <div class="name">{sign.name}</div>
+              <div class="latin">{sign.latin}</div>
+            </a>
+          ))
+        }
+      </section>
     </main>
   </body>
 </html>
