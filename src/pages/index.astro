@@ -1,4 +1,6 @@
-﻿---
+﻿```astro
+---
+
 const features = [
   {
     title: 'نقشه تولد',
@@ -11,6 +13,12 @@ const features = [
     description:
       'هر روز نگاهی تازه به انرژی‌ها و نشانه‌های آسمان داشته باش.',
     href: '/daily-horoscope',
+  },
+  {
+    title: 'طالع‌بینی ماهانه',
+    description:
+      'چشم‌اندازی تازه از انرژی‌ها، فرصت‌ها و روندهای ماه پیش رو برای نشانه زودیاک خودت.',
+    href: '/monthly-horoscope',
   },
   {
     title: 'نشانه‌های زودیاک',
@@ -34,6 +42,7 @@ const zodiacSigns = [
   { name: 'دلو', latin: 'Aquarius', symbol: '/zodiac/aquarius.svg' },
   { name: 'حوت', latin: 'Pisces', symbol: '/zodiac/pisces.svg' },
 ];
+
 ---
 
 <!doctype html>
@@ -53,19 +62,15 @@ const zodiacSigns = [
       <div class="galaxy-image"></div>
       <div class="galaxy-purple"></div>
       <div class="galaxy-depth"></div>
-
       <div class="nebula nebula-one"></div>
       <div class="nebula nebula-two"></div>
       <div class="nebula nebula-three"></div>
-
       <div class="stars stars-one"></div>
       <div class="stars stars-two"></div>
       <div class="stars stars-three"></div>
-
       <div class="light-orb orb-one"></div>
       <div class="light-orb orb-two"></div>
       <div class="light-orb orb-three"></div>
-
       <div class="cosmic-vignette"></div>
     </div>
 
@@ -144,7 +149,9 @@ const zodiacSigns = [
       <section class="features-section" id="features">
         <div class="section-heading">
           <p class="section-label">کشف کن</p>
+
           <h2>آسمان تو، داستان تو</h2>
+
           <p>
             از شناخت نشانه زودیاک تا کشف نقشه شخصی تولد، مسیر خودت را در میان
             ستارگان پیدا کن.
@@ -291,7 +298,6 @@ const zodiacSigns = [
     animation: galaxy-drift 28s ease-in-out infinite alternate;
   }
 
-  /* Purple color layer */
   .galaxy-purple {
     position: absolute;
     inset: 0;
@@ -313,7 +319,6 @@ const zodiacSigns = [
     opacity: 0.9;
   }
 
-  /* Controls the bright center without hiding the galaxy */
   .galaxy-depth {
     position: absolute;
     inset: 0;
@@ -775,7 +780,7 @@ const zodiacSigns = [
 
   .features-grid {
     display: grid;
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(4, 1fr);
     gap: 18px;
   }
 
@@ -1133,6 +1138,12 @@ const zodiacSigns = [
      RESPONSIVE
      ========================= */
 
+  @media (max-width: 1050px) {
+    .features-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
   @media (max-width: 900px) {
     .features-grid {
       grid-template-columns: 1fr;
@@ -1247,3 +1258,4 @@ const zodiacSigns = [
     }
   }
 </style>
+```
